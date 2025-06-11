@@ -73,9 +73,9 @@
     </section>
   </main>
 
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+  <!-- Firebase CDN with compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <script>
     // 密碼驗證
@@ -128,8 +128,9 @@
           text: input.value,
           time: timeString
         };
-        messagesRef.push(messageData);
-        input.value = "";
+        messagesRef.push(messageData)
+          .then(() => input.value = "")
+          .catch(err => alert("留言失敗：" + err.message));
       }
     }
 
