@@ -73,7 +73,12 @@
     </section>
   </main>
 
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+
   <script>
+    // 密碼驗證
     let password = sessionStorage.getItem("password");
     if (password !== "960913") {
       password = prompt("請輸入進入密碼：");
@@ -85,6 +90,7 @@
       }
     }
 
+    // 暱稱設定
     let nickname = localStorage.getItem("nickname");
     if (!nickname) {
       nickname = prompt("歡迎進入我們的小天地！請輸入你的暱稱：");
@@ -96,22 +102,48 @@
 
     document.querySelector("main").style.display = "block";
 
+    // Firebase 設定
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDImK5HELU21qN5hNe9ggHllMH2VTd_fE",
+      authDomain: "friend-space-a4fd4.firebaseapp.com",
+      projectId: "friend-space-a4fd4",
+      storageBucket: "friend-space-a4fd4.firebasestorage.app",
+      messagingSenderId: "899183937218",
+      appId: "1:899183937218:web:7c7d4a921d12c60dd29d5b",
+      measurementId: "G-TSMTW6P42S",
+      databaseURL: "https://friend-space-a4fd4-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const messagesRef = db.ref("messages");
+
     function addMessage() {
       const input = document.getElementById("messageInput");
-      const list = document.getElementById("messageList");
       if (input.value.trim() !== "") {
-        const li = document.createElement("li");
         const now = new Date();
         const timeString = now.toLocaleString("zh-TW", { hour12: false });
-        li.innerHTML = `
-          <strong>${nickname}</strong> 說：<br>
-          ${input.value}<br>
-          <div class="meta">🕒 ${timeString}</div>
-        `;
-        list.insertBefore(li, list.firstChild);
+        const messageData = {
+          nickname: nickname,
+          text: input.value,
+          time: timeString
+        };
+        messagesRef.push(messageData);
         input.value = "";
       }
     }
+
+    messagesRef.on("child_added", function(snapshot) {
+      const data = snapshot.val();
+      const list = document.getElementById("messageList");
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${data.nickname}</strong> 說：<br>
+        ${data.text}<br>
+        <div class="meta">🕒 ${data.time}</div>
+      `;
+      list.insertBefore(li, list.firstChild);
+    });
   </script>
 </body>
 </html>
